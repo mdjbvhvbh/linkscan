@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LinkScan — منصة فحص الروابط والملفات</title>
+<meta name="description" content="LinkScan: منصة أمنية لفحص الروابط والملفات — درجة خطر + ثقة، شفافية كاملة لكل مرحلة فحص، عربي/إنجليزي.">
+<style>
+:root{--bg:#050805;--card:#0a0f0a;--line:#1c3524;--txt:#d2ffd9;--mut:#5f8a68;--neon:#00ff88;--cyan:#00e5ff;--red:#ff3b5c;--amber:#ffb300}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--txt);
+background-image:linear-gradient(rgba(0,255,136,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.03) 1px,transparent 1px);
+background-size:28px 28px;line-height:1.9}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+header.top{border-bottom:1px solid var(--neon);box-shadow:0 0 18px rgba(0,255,136,.15);padding:14px 0;position:sticky;top:0;background:rgba(5,8,5,.94);z-index:10}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center}
+.brand{font-family:monospace;font-weight:800;font-size:20px;color:var(--neon);text-shadow:0 0 12px rgba(0,255,136,.6);letter-spacing:1px}
+.badge{font-family:monospace;font-size:11px;color:var(--amber);border:1px solid var(--amber);border-radius:4px;padding:3px 10px;background:rgba(255,179,0,.07)}
+.hero{text-align:center;padding:90px 0 60px}
+.hero h1{font-size:52px;color:var(--neon);font-family:monospace;text-shadow:0 0 24px rgba(0,255,136,.55);letter-spacing:2px}
+.hero h1 .cur{display:inline-block;width:22px;height:40px;background:var(--neon);vertical-align:-6px;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+.hero p.sub{font-size:20px;color:var(--txt);margin:18px 0 6px}
+.hero p.desc{color:var(--mut);max-width:640px;margin:0 auto 30px;font-size:15px}
+.cta{display:inline-block;background:rgba(0,255,136,.12);color:var(--neon);border:1px solid var(--neon);border-radius:8px;
+padding:12px 34px;font-size:16px;font-family:monospace;text-decoration:none;box-shadow:0 0 16px rgba(0,255,136,.25);margin:6px}
+.cta:hover{background:rgba(0,255,136,.22)}
+.cta.ghost{background:transparent;color:var(--mut);border-color:var(--line);box-shadow:none}
+section{padding:44px 0}
+h2{font-size:24px;margin-bottom:20px;color:var(--txt)}
+h2::before{content:"// ";color:var(--neon);font-family:monospace}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:20px;position:relative}
+.card::after{content:"";position:absolute;top:0;right:0;left:0;height:2px;background:var(--neon);opacity:.55;box-shadow:0 0 8px var(--neon)}
+.card h3{color:var(--neon);font-size:16px;margin-bottom:8px;font-family:monospace}
+.card h3 .ic{font-family:system-ui}
+.card p{color:var(--mut);font-size:14px}
+.steps{display:flex;flex-direction:column;gap:0;max-width:640px;margin:0 auto}
+.step{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-right:2px solid var(--line);padding-right:20px;position:relative}
+.step::before{content:attr(data-n);position:absolute;right:-17px;top:14px;width:32px;height:32px;border-radius:50%;
+background:var(--bg);border:1px solid var(--neon);color:var(--neon);font-family:monospace;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 10px rgba(0,255,136,.3)}
+.step h4{color:var(--txt);font-size:16px}
+.step p{color:var(--mut);font-size:14px}
+.term{background:#070c07;border:1px solid var(--line);border-radius:8px;padding:18px;font-family:monospace;font-size:13px;color:var(--neon);overflow-x:auto;margin:10px 0}
+.term .mut{color:var(--mut)}.term .red{color:var(--red)}.term .amb{color:var(--amber)}
+.stack{display:flex;flex-wrap:wrap;gap:8px}
+.stack span{font-family:monospace;font-size:12px;color:var(--cyan);border:1px solid var(--line);border-radius:4px;padding:4px 12px;background:rgba(0,229,255,.05)}
+.note{font-size:13px;color:var(--mut);background:rgba(255,179,0,.05);border:1px dashed var(--amber);border-radius:8px;padding:14px;margin-top:16px}
+footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;color:var(--mut);font-size:13px;font-family:monospace}
+footer a{color:var(--neon);text-decoration:none}
+@media(max-width:600px){.hero h1{font-size:36px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<div class="brand">[ LINKSCAN ]</div>
+<div class="badge">DEV // NOT PRODUCTION READY</div>
+</div></header>
+
+<div class="wrap">
+<div class="hero">
+<h1>LINKSCAN <span class="cur"></span></h1>
+<p class="sub">افحص الرابط قبل ما تضغط عليه</p>
+<p class="desc">منصة أمنية لفحص الروابط والملفات: درجة خطر + درجة ثقة لكل نتيجة، وشفافية كاملة — تشوف كل مرحلة فحص وسبب الحكم. عربي وإنجليزي.</p>
+<a class="cta" href="https://t.me/LinkScan1bot">$ جرّب البوت على تيليجرام</a><br>
+<a class="cta ghost" href="#how">كيف يعمل؟</a>
+</div>
+
+<section>
+<h2>لماذا LinkScan؟</h2>
+<div class="grid">
+<div class="card"><h3><span class="ic">🎯</span> risk + confidence</h3><p>كل فحص يعطي درجتين: خطورة التهديد، وثقة النظام في حكمه. لا حكم بلا مقدار ثقة.</p></div>
+<div class="card"><h3><span class="ic">🔍</span> شفافية المراحل</h3><p>سجل كامل لكل مرحلة: فحص الروابط، الاستخبارات، المحتوى، الملفات — تعرف بالضبط ماذا حدث.</p></div>
+<div class="card"><h3><span class="ic">🛡️</span> حماية SSRF</h3><p>بوابة اتصال واحدة معزولة تمنع استغلال الفاحص نفسه للوصول لشبكات داخلية.</p></div>
+<div class="card"><h3><span class="ic">🌐</span> عربي / إنجليزي</h3><p>واجهة وتقارير باللغتين — مصمم للاستخدام العربي أولًا.</p></div>
+<div class="card"><h3><span class="ic">🤖</span> بوت تيليجرام</h3><p>أرسل الرابط أو الملف للبوت وتصلك النتيجة فورًا مع التفاصيل وأزرار التفاعل.</p></div>
+<div class="card"><h3><span class="ic">📊</span> لوحة إدارة</h3><p>إحصائيات، جودة الكشف، سجل تدقيق إلحاقي لا يُحذف، وإدارة طوارئ.</p></div>
+</div>
+</section>
+
+<section id="how">
+<h2>كيف يعمل؟</h2>
+<div class="steps">
+<div class="step" data-n="1"><div><h4>أرسل الرابط أو الملف</h4><p>عبر بوت التيليجرام — بدون تسجيل.</p></div></div>
+<div class="step" data-n="2"><div><h4>خط الفحص</h4><p>استخبارات التهديدات ← سلسلة التحويلات ← DNS/TLS ← فحص المحتوى ← تحليل الملفات.</p></div></div>
+<div class="step" data-n="3"><div><h4>الحكم</h4><p>سليم / خبيث / غير مؤكد — مع درجة الخطر والثقة والمؤشرات.</p></div></div>
+</div>
+<div class="term">
+<span class="mut">$</span> linkscan scan --target &lt;url&gt;<br>
+<span style="color:var(--red)">VERDICT: MALICIOUS</span> <span class="mut">[91/100] band: حرج</span><br>
+<span class="mut">$</span> pipeline trace:<br>
+<span style="color:var(--neon)">[OK]</span> <span class="mut">url_intel 0.4s</span><br>
+<span style="color:var(--neon)">[OK]</span> <span class="mut">redirect_chain 1.2s</span><br>
+<span style="color:var(--red)">[THREAT]</span> <span class="mut">content_scan 2.1s — phishing kit</span><br>
+<span class="amb">[WARN]</span> <span class="mut">ai_assist — timeout</span>
+</div>
+</section>
+
+<section>
+<h2>التقنية</h2>
+<div class="stack">
+<span>Python</span><span>FastAPI</span><span>PostgreSQL</span><span>Redis</span><span>Docker</span><span>Telegram Bot API</span><span>arq</span><span>alembic</span>
+</div>
+<div class="note">⚠️ المشروع قيد التطوير النشط وليس جاهزًا للإنتاج بعد — النسخ الاحتياطية المشفرة واختبارات الاستعادة مكتملة محليًا، وبوابات الإنتاج (العزل الشبكي، الشهادات، المراقبة) تنتظر سيرفر الإنتاج.</div>
+</section>
+</div>
+
+<footer>
+<div class="wrap">
+<p>[ LINKSCAN ] — built with rigor · <a href="https://t.me/LinkScan1bot">@LinkScan1bot</a></p>
+</div>
+</footer>
+</body>
+</html>
