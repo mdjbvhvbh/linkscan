@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LinkScan — فحص الروابط</title>
+<meta name="description" content="افحص أي رابط بمؤشرات أمان حقيقية من متصفحك مباشرة.">
+<style>
+:root{--bg:#050807;--panel:#0a0f0d;--line:#123326;--neon:#00ff88;--dim:#0a5c38;--mut:#7fa895;--txt:#d6f5e3;--warn:#ffb000;--bad:#ff4d5e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:Tahoma,Arial,sans-serif;min-height:100vh;
+background-image:linear-gradient(rgba(0,255,136,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.04) 1px,transparent 1px);background-size:32px 32px}
+.wrap{max-width:760px;margin:0 auto;padding:28px 18px 60px}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:26px}
+.logo{font-family:monospace;font-size:22px;color:var(--neon);font-weight:bold;letter-spacing:1px}
+.logo a{color:var(--neon);text-decoration:none}
+.badge{font-family:monospace;font-size:11px;color:var(--warn);border:1px solid var(--warn);padding:4px 10px;border-radius:4px}
+h1{font-size:26px;margin-bottom:8px;color:var(--neon)}
+.sub{color:var(--mut);font-size:14px;margin-bottom:22px;line-height:1.9}
+.scanbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:20px}
+.row{display:flex;gap:10px}
+input[type=text]{flex:1;background:#050807;border:1px solid var(--dim);color:var(--txt);border-radius:6px;padding:13px 14px;font-size:15px;font-family:monospace;direction:ltr;text-align:left}
+input[type=text]:focus{outline:none;border-color:var(--neon)}
+button{background:var(--neon);color:#04120a;border:none;border-radius:6px;padding:13px 26px;font-size:16px;font-weight:bold;cursor:pointer;font-family:inherit}
+button:hover{filter:brightness(1.12)}
+button:disabled{opacity:.5;cursor:wait}
+.terminal{background:#020403;border:1px solid var(--line);border-radius:8px;padding:16px;font-family:monospace;font-size:13px;direction:ltr;text-align:left;min-height:120px;margin-top:16px;display:none}
+.terminal .ln{color:var(--mut);margin:5px 0;white-space:pre-wrap;word-break:break-all}
+.terminal .ok{color:var(--neon)}
+.terminal .warn{color:var(--warn)}
+.terminal .bad{color:var(--bad)}
+.result{display:none;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px;margin-top:6px}
+.gauge{display:flex;align-items:center;gap:18px;margin-bottom:16px}
+.score{font-family:monospace;font-size:52px;font-weight:bold;min-width:110px;text-align:center}
+.score small{display:block;font-size:12px;color:var(--mut);font-weight:normal}
+.vlabel{font-size:20px;font-weight:bold}
+.bar{height:10px;background:#0a1510;border-radius:5px;overflow:hidden;margin:14px 0}
+.bar i{display:block;height:100%;border-radius:5px;transition:width .8s}
+.findings{list-style:none;margin-top:10px}
+.findings li{padding:10px 12px;border:1px solid var(--line);border-radius:6px;margin-bottom:8px;font-size:14px;line-height:1.8}
+.findings .sev{display:inline-block;font-family:monospace;font-size:11px;padding:2px 8px;border-radius:4px;margin-left:8px}
+.sev.high{background:rgba(255,77,94,.15);color:var(--bad);border:1px solid var(--bad)}
+.sev.med{background:rgba(255,176,0,.12);color:var(--warn);border:1px solid var(--warn)}
+.sev.low{background:rgba(0,255,136,.1);color:var(--neon);border:1px solid var(--dim)}
+.notice{margin-top:18px;border:1px dashed var(--warn);border-radius:8px;padding:14px;font-size:13px;color:var(--warn);line-height:2}
+.notice b{color:var(--txt)}
+.err{color:var(--bad);font-size:14px;margin-top:12px;display:none}
+footer{margin-top:44px;border-top:1px solid var(--line);padding-top:20px;text-align:center;color:var(--mut);font-size:13px;font-family:monospace}
+footer a{color:var(--neon);text-decoration:none}
+footer p{margin:6px 0}
+@media(max-width:560px){.row{flex-direction:column}button{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="logo"><a href="index.html">[LINKSCAN]</a></div>
+<div class="badge">فحص أولي محلي</div>
+</header>
+
+<h1>افحص الرابط الآن</h1>
+<p class="sub">الصق أي رابط وسأفحص مؤشرات الخطر الحقيقية من متصفحك مباشرة: انتحال النطاقات، عناوين IP، روابط التقصير، ومحاكاة العلامات التجارية.</p>
+
+<div class="scanbox">
+<div class="row">
+<input type="text" id="url" placeholder="https://example.com/suspicious-link" autocomplete="off" spellcheck="false">
+<button id="go" onclick="scan()">افحص</button>
+</div>
+<div class="err" id="err"></div>
+<div class="terminal" id="term"></div>
+</div>
+
+<div class="result" id="result">
+<div class="gauge">
+<div class="score"><span id="score">0</span><small>/ 100 خطر</small></div>
+<div><div class="vlabel" id="vlabel"></div><div class="sub" id="vsub" style="margin:6px 0 0"></div></div>
+</div>
+<div class="bar"><i id="barfill"></i></div>
+<ul class="findings" id="findings"></ul>
+<div class="notice">⚠️ <b>فحص أولي محلي فقط</b> — يغطي مؤشرات بنية الرابط. المحرك الكامل (تتبع التوجيهات، فحص المحتوى، الذكاء الاصطناعي، قواعد التهديدات) يُفعَّل عند ربط السيرفر. لا توجد نتيجة تعني "آمن 100%" أبدًا.</div>
+</div>
+
+<footer>
+<p>[ LINKSCAN ] — <a href="https://t.me/LinkScan1bot">@LinkScan1bot</a></p>
+<p>جميع الحقوق لـ د. مازن جميل</p>
+<p dir="ltr">All Rights Reserved © Dr. Mazen Jamil</p>
+</footer>
+</div>
+
+<script>
+const SHORTENERS=["bit.ly","tinyurl.com","t.ly","ow.ly","is.gd","cutt.ly","rebrand.ly","shorturl.at","goo.gl","s.id","lnk.bio"];
+const BAD_TLDS=["tk","ml","ga","cf","gq","xyz","top","click","buzz","rest","work","cam","zip","mov","quest","sbs"];
+const BRANDS=["paypal","apple","google","microsoft","amazon","netflix","facebook","instagram","whatsapp","telegram","binance","coinbase","bank","alahli","rajhi","stc","mobily"];
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function tlog(html,cls){const t=document.getElementById('term');const d=document.createElement('div');d.className='ln '+(cls||'');d.innerHTML=html;t.appendChild(d);t.scrollTop=t.scrollHeight;}
+
+async function scan(){
+  const raw=document.getElementById('url').value.trim();
+  const err=document.getElementById('err'),term=document.getElementById('term'),res=document.getElementById('result');
+  err.style.display='none';res.style.display='none';term.style.display='block';term.innerHTML='';
+  document.getElementById('go').disabled=true;
+  let u;
+  try{
+    let norm=raw;
+    if(!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(norm))norm='https://'+norm;
+    u=new URL(norm);
+    if(!/^https?:$/.test(u.protocol))throw 0;
+  }catch(e){err.textContent='رابط غير صالح — تأكد من الصيغة وحاول مجددًا.';err.style.display='block';term.style.display='none';document.getElementById('go').disabled=false;return;}
+  const host=u.hostname.toLowerCase();
+  const findings=[];let score=0;
+  const add=(sev,pts,text)=>{score+=pts;findings.push({sev,text});};
+
+  tlog('$ linkscan --target '+host.replace(/</g,'&lt'));
+  await sleep(350);
+  tlog('[1/5] protocol_check ... '+(u.protocol==='https:'?'<span class="ok">[OK]</span> https':'<span class="warn">[WARN]</span> plain http'),'');
+  if(u.protocol!=='https:')add('med',10,'الاتصال غير مشفّر (http) — البيانات قد تُعترض.');
+  await sleep(300);
+  const isIP=/^(\d{1,3}\.){3}\d{1,3}$/.test(host)||/^\[?[0-9a-f:]{3,}\]?$/.test(host)&&host.includes(':');
+  tlog('[2/5] host_analysis ... '+(isIP?'<span class="bad">[SUSPICIOUS]</span> numeric IP host':'<span class="ok">[OK]</span> '+host.replace(/</g,'&lt')),'');
+  if(isIP)add('high',30,'المضيف عنوان IP رقمي مباشر بدل اسم نطاق — أسلوب شائع في التصيد.');
+  await sleep(300);
+  const puny=host.includes('xn--');
+  const atSign=u.href.indexOf('@')>-1&&(u.username||u.href.split('/')[2].includes('@'));
+  tlog('[3/5] deception_check ... '+(puny||atSign?'<span class="bad">[SUSPICIOUS]</span>':'<span class="ok">[OK]</span>'),'');
+  if(puny)add('high',35,'النطاق يستخدم ترميز punycode (xn--) — احتمال انتحال بأحرف متشابهة.');
+  if(atSign)add('high',30,'الرابط يحتوي على @ — قد يُخفي الوجهة الحقيقية خلف بيانات وهمية.');
+  await sleep(300);
+  const tld=host.split('.').pop();
+  const short=SHORTENERS.some(s=>host===s||host.endsWith('.'+s));
+  const badTld=BAD_TLDS.includes(tld);
+  const brandHit=BRANDS.find(b=>{if(host===b+'.com'||host.endsWith('.'+b+'.com')||host.endsWith(b+'.sa'))return false;return new RegExp('(^|[.-])'+b+'($|[.-])').test(host);});
+  const subs=host.split('.').length-2;
+  let line='[4/5] reputation_signals ... ';
+  line+=(short||badTld||brandHit)?'<span class="warn">[REVIEW]</span>':'<span class="ok">[OK]</span>';
+  tlog(line,'');
+  if(short)add('med',25,'رابط تقصير ('+host+') — يُخفي الوجهة النهائية الحقيقية.');
+  if(badTld)add('med',20,'النطاق العلوي .'+tld+' مرتبط تاريخيًا بمعدلات تصيد مرتفعة.');
+  if(brandHit)add('high',35,'النطاق يحاكي علامة تجارية ('+brandHit+') دون أن يكون نطاقها الرسمي.');
+  if(subs>3)add('med',15,'عدد النطاقات الفرعية مرتفع ('+subs+') — أسلوب تمويه شائع.');
+  await sleep(300);
+  const longUrl=u.href.length>200,paramCount=[...u.searchParams].length;
+  tlog('[5/5] payload_hints ... '+((longUrl||paramCount>5)?'<span class="warn">[REVIEW]</span>':'<span class="ok">[OK]</span>'),'');
+  if(longUrl||paramCount>5)add('low',5,'الرابط طويل أو مليء بالمعاملات — راجع الوجهة بحذر.');
+  await sleep(250);
+  tlog('$ scan complete — '+findings.length+' finding(s)','ok');
+
+  score=Math.min(score,99);
+  let vlabel,vcolor,vsub;
+  if(score<=20){vlabel='مخاطر منخفضة';vcolor='#00ff88';vsub='لا توجد مؤشرات خطر واضحة في بنية الرابط.';}
+  else if(score<=45){vlabel='مخاطر متوسطة';vcolor='#ffb000';vsub='مؤشرات تستحق الحذر — تحقق قبل المتابعة.';}
+  else if(score<=70){vlabel='مخاطر مرتفعة';vcolor='#ff7a1a';vsub='مؤشرات قوية على الخطر — تجنّب إدخال أي بيانات.';}
+  else{vlabel='خطر حرج';vcolor='#ff4d5e';vsub='لا تفتح الرابط ولا تدخل أي معلومات.';}
+
+  document.getElementById('score').textContent=score;
+  document.getElementById('score').style.color=vcolor;
+  document.getElementById('vlabel').textContent=vlabel;
+  document.getElementById('vlabel').style.color=vcolor;
+  document.getElementById('vsub').textContent=vsub;
+  const bf=document.getElementById('barfill');bf.style.width=score+'%';bf.style.background=vcolor;
+  const fl=document.getElementById('findings');fl.innerHTML='';
+  if(!findings.length){const li=document.createElement('li');li.innerHTML='<span class="sev low">سليم</span> لم تُرصد مؤشرات خطر في بنية الرابط بهذا الفحص الأولي.';fl.appendChild(li);}
+  findings.forEach(f=>{const li=document.createElement('li');const s=f.sev==='high'?'مرتفع':f.sev==='med'?'متوسط':'منخفض';li.innerHTML='<span class="sev '+f.sev+'">'+s+'</span> '+f.text;fl.appendChild(li);});
+  res.style.display='block';
+  res.scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('go').disabled=false;
+}
+document.getElementById('url').addEventListener('keydown',e=>{if(e.key==='Enter')scan();});
+</script>
+</body>
+</html>
